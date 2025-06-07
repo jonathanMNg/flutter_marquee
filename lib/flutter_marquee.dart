@@ -10,7 +10,15 @@ class FlutterMarquee extends StatefulWidget {
     this.startAfter = Duration.zero,
     this.pauseAfterRound = Duration.zero,
     this.velocity = 100,
-  });
+  }) : assert(
+         startAfter >= Duration.zero,
+         'startAfter must be greater than or equal to Duration.zero',
+       ),
+       assert(
+         pauseAfterRound >= Duration.zero,
+         'pauseAfterRound must be greater than or equal to Duration.zero',
+       ),
+       assert(velocity > 0, "The velocity cannot be less than zero");
 
   final double height;
   final String text;
@@ -33,30 +41,36 @@ class _FlutterMarqueeState extends State<FlutterMarquee> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _scrollReverse();
-      } else if (_scrollController.position.pixels == 0) {
-        _scroll();
-      }
-    });
 
     // Calculate text width synchronously
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _textWidth = _getTextWidth(context);
-      _initialize();
-      Future.delayed(Duration(seconds: 1), () {
-        _scroll();
-      });
+      final screenWidth = MediaQuery.of(context).size.width;
+
+      if (_textWidth > screenWidth) {
+        _scrollController.addListener(() {
+          if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent) {
+            _scrollReverse(widget.pauseAfterRound);
+          } else if (_scrollController.position.pixels == 0) {
+            _scroll(widget.pauseAfterRound);
+          }
+        });
+        _initialize();
+        _scroll(widget.startAfter);
+      } else {
+        _scrollController.dispose();
+      }
     });
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    if (_scrollController.hasClients) {
+      _scrollController.dispose();
+    }
     super.dispose();
-  } 
+  }
 
   void _initialize() {
     final linearLength = _textWidth * 1;
@@ -66,26 +80,24 @@ class _FlutterMarqueeState extends State<FlutterMarquee> {
     _linearDuration = _totalDuration;
   }
 
-  Future<void> _scroll() async {
-    Future.delayed(widget.startAfter, () {
+  Future<void> _scroll(Duration delay) async {
+    Future.delayed(delay, () {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: _linearDuration!,
         curve: Curves.linear,
       );
     });
-    await Future.delayed(widget.pauseAfterRound);
   }
 
-  Future<void> _scrollReverse() async {
-    Future.delayed(widget.startAfter, () {
+  Future<void> _scrollReverse(Duration delay) async {
+    await Future.delayed(delay, () {
       _scrollController.animateTo(
         0,
         duration: _linearDuration!,
         curve: Curves.linear,
       );
     });
-    await Future.delayed(widget.pauseAfterRound);
   }
 
   @override
