@@ -164,13 +164,13 @@
       "languageVersion": "3.3"
     },
     {
-      "name": "flutter_marquee",
+      "name": "flutter_just_marquee",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2025-06-07T20:41:49.447542Z",
+  "generated": "2025-06-07T20:52:08.153369Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/.SDK/flutter",

@@ -1,5 +1,5 @@
-name: flutter_marquee
-description: A Flutter widget that creates a smooth scrolling marquee text effect, automatically handling text that exceeds screen width.
+name: flutter_just_marquee
+description: A simple Flutter widget that creates a smooth scrolling marquee text effect, automatically handling text that exceeds screen width.
 version: 1.0.0
 homepage: https://github.com/jonathanMNg/flutter_marquee
 repository: https://github.com/jonathanMNg/flutter_marquee
