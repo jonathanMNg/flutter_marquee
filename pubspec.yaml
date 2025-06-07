@@ -1,0 +1,17 @@
+name: flutter_marquee
+description: "A new Flutter project."
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ^3.7.2
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  fading_edge_scrollview: ^4.1.1
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+flutter:
