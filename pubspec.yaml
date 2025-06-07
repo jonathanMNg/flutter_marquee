@@ -1,11 +1,14 @@
 name: flutter_marquee
-description: "A new Flutter project."
-version: 0.0.1
-homepage:
+description: A Flutter widget that creates a smooth scrolling marquee text effect, automatically handling text that exceeds screen width.
+version: 1.0.0
+homepage: https://github.com/jonathanMNg/flutter_marquee
+repository: https://github.com/jonathanMNg/flutter_marquee
+issue_tracker: https://github.com/jonathanMNg/flutter_marquee/issues
+documentation: https://github.com/jonathanMNg/flutter_marquee#readme
 
 environment:
-  sdk: ^3.7.2
-  flutter: ">=1.17.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:
@@ -13,7 +16,9 @@ dependencies:
   fading_edge_scrollview: ^4.1.1
 
 dev_dependencies:
-  flutter_lints: ^5.0.0
+  flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
+
 flutter:
+  # This section is intentionally left empty as this is a pure Dart package

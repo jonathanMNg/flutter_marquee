@@ -1,7 +1,15 @@
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 
+/// A Flutter widget that creates a smooth scrolling marquee text effect.
+///
+/// This widget automatically handles text that exceeds screen width by creating
+/// a smooth scrolling animation. If the text fits within the screen width,
+/// no scrolling animation will be performed.
 class FlutterMarquee extends StatefulWidget {
+  /// Creates a marquee widget.
+  ///
+  /// The [height] and [text] parameters must not be null.
   const FlutterMarquee({
     super.key,
     required this.height,
@@ -10,21 +18,44 @@ class FlutterMarquee extends StatefulWidget {
     this.startAfter = Duration.zero,
     this.pauseAfterRound = Duration.zero,
     this.velocity = 100,
-  }) : assert(
-         startAfter >= Duration.zero,
-         'startAfter must be greater than or equal to Duration.zero',
-       ),
-       assert(
-         pauseAfterRound >= Duration.zero,
-         'pauseAfterRound must be greater than or equal to Duration.zero',
-       ),
-       assert(velocity > 0, "The velocity cannot be less than zero");
+  })  : assert(
+          startAfter >= Duration.zero,
+          'startAfter must be greater than or equal to Duration.zero',
+        ),
+        assert(
+          pauseAfterRound >= Duration.zero,
+          'pauseAfterRound must be greater than or equal to Duration.zero',
+        ),
+        assert(velocity > 0, "The velocity cannot be less than zero");
 
+  /// The height of the marquee widget.
+  ///
+  /// This determines the vertical space the marquee will occupy.
   final double height;
+
+  /// The text to display in the marquee.
+  ///
+  /// This text will be scrolled horizontally if it exceeds the screen width.
   final String text;
+
+  /// The text style to apply to the marquee text.
+  ///
+  /// If null, the default text style will be used.
   final TextStyle? style;
+
+  /// The duration to wait before starting the scroll animation.
+  ///
+  /// Defaults to [Duration.zero], meaning the animation starts immediately.
   final Duration startAfter;
+
+  /// The duration to pause after each complete scroll round.
+  ///
+  /// Defaults to [Duration.zero], meaning no pause between scroll rounds.
   final Duration pauseAfterRound;
+
+  /// The scroll speed in pixels per second.
+  ///
+  /// Defaults to 100 pixels per second.
   final double velocity;
 
   @override
@@ -32,9 +63,16 @@ class FlutterMarquee extends StatefulWidget {
 }
 
 class _FlutterMarqueeState extends State<FlutterMarquee> {
+  /// Controller for managing the scroll position and animation.
   late final ScrollController _scrollController;
+
+  /// The calculated width of the text content.
   late final double _textWidth;
+
+  /// The total duration for one complete scroll cycle.
   late Duration _totalDuration;
+
+  /// The duration for the linear scrolling animation.
   Duration? _linearDuration;
 
   @override
@@ -51,13 +89,16 @@ class _FlutterMarqueeState extends State<FlutterMarquee> {
         _scrollController.addListener(() {
           if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent) {
-            _scrollReverse(widget.pauseAfterRound);
+            _scrollReverse();
           } else if (_scrollController.position.pixels == 0) {
-            _scroll(widget.pauseAfterRound);
+            _scroll();
           }
         });
+
         _initialize();
-        _scroll(widget.startAfter);
+        Future.delayed(Duration(seconds: 1), () {
+          _scroll();
+        });
       } else {
         _scrollController.dispose();
       }
@@ -72,32 +113,40 @@ class _FlutterMarqueeState extends State<FlutterMarquee> {
     super.dispose();
   }
 
+  /// Initializes the scroll duration based on text width and velocity.
   void _initialize() {
     final linearLength = _textWidth * 1;
-    _totalDuration = Duration(
-      milliseconds: (linearLength / widget.velocity * 1000).toInt(),
-    );
+    _totalDuration =
+        Duration(milliseconds: (linearLength / widget.velocity * 1000).toInt());
     _linearDuration = _totalDuration;
   }
 
-  Future<void> _scroll(Duration delay) async {
-    Future.delayed(delay, () {
+  /// Scrolls the text from left to right.
+  ///
+  /// This method is called when the text needs to scroll forward.
+  Future<void> _scroll() async {
+    Future.delayed(widget.startAfter, () {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: _linearDuration!,
         curve: Curves.linear,
       );
     });
+    await Future.delayed(widget.pauseAfterRound);
   }
 
-  Future<void> _scrollReverse(Duration delay) async {
-    await Future.delayed(delay, () {
+  /// Scrolls the text from right to left.
+  ///
+  /// This method is called when the text needs to scroll backward.
+  Future<void> _scrollReverse() async {
+    Future.delayed(widget.startAfter, () {
       _scrollController.animateTo(
         0,
         duration: _linearDuration!,
         curve: Curves.linear,
       );
     });
+    await Future.delayed(widget.pauseAfterRound);
   }
 
   @override
@@ -115,11 +164,13 @@ class _FlutterMarqueeState extends State<FlutterMarquee> {
     );
   }
 
-  /// Returns the width of the text.
+  /// Calculates the width of the text content.
+  ///
+  /// Returns the width in pixels that the text will occupy.
   double _getTextWidth(BuildContext context) {
     final span = TextSpan(text: widget.text, style: widget.style);
 
-    final constraints = BoxConstraints(maxWidth: double.infinity);
+    const constraints = BoxConstraints(maxWidth: double.infinity);
 
     final richTextWidget = Text.rich(span).build(context) as RichText;
     final renderObject = richTextWidget.createRenderObject(context);
